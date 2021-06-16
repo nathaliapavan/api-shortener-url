@@ -5,9 +5,16 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\Models\Url;
+use App\Services\UrlService;
 use Validator;
 
 class UrlController extends Controller {
+
+    protected $urlService;
+
+    public function __construct(UrlService $urlService) {
+        $this->urlService = $urlService;
+    }
 
     /**
      * Display a listing of the resource.
@@ -15,6 +22,32 @@ class UrlController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function index() {
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->urlService->getAll();
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return response()->json(Url::all());
+    }
+
+    public function show() {
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->urlService->getByDesirableUrl(); // getById
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
         return response()->json(Url::all());
     }
 
@@ -25,6 +58,20 @@ class UrlController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
+        $data = $request->all();
+
+        $result = ['status' => 200];
+
+        try {
+            $result['data'] = $this->urlService->saveUrlData($data);
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+
+        return response()->json($result, $result['status']);
     }
 
     /**
@@ -35,20 +82,17 @@ class UrlController extends Controller {
      */
     public function destroy($id) {
 
+        $result = ['status' => 201];
+
         try {
-            $url = Url::findOrFail($id);
-            $url->delete();
-
-            return response()->json([
-                'message' => 'Deleted Successfully.'
-            ], 201);
-
-        } catch (\Throwable $th) {
-
-            return response()->json([
-                'message' => 'Url not found.'
-            ], 404);
-
+            $result['data'] = $this->urlService->deleteById($id);
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
         }
+
+        return response()->json($result, $result['status']);
     }
 }

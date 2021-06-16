@@ -28,5 +28,6 @@ Route::group([
     Route::get('/profile', [AuthController::class, 'userProfile']);
 });
 
-Route::get('/url', [UrlController::class, 'index']);
-Route::delete('/url/{id}', [UrlController::class, 'destroy']);
+Route::get('urls', [UrlController::class, 'index']);
+Route::post('/urls', [UrlController::class, 'store']);
+Route::delete('/urls/{id}', [UrlController::class, 'destroy']);
