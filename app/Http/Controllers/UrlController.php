@@ -40,7 +40,7 @@ class UrlController extends Controller {
         $result = ['status' => 200];
 
         try {
-            $result['data'] = $this->urlService->getByDesirableUrl(); // getById
+            $result['data'] = $this->urlService->loadUrl(); // getById
         } catch (\Exception $e) {
             $result = [
                 'status' => 500,
@@ -63,7 +63,7 @@ class UrlController extends Controller {
         $result = ['status' => 200];
 
         try {
-            $result['data'] = $this->urlService->saveUrlData($data);
+            $result['data'] = $this->urlService->buildUrl($data);
         } catch (\Exception $e) {
             $result = [
                 'status' => 500,
@@ -94,5 +94,21 @@ class UrlController extends Controller {
         }
 
         return response()->json($result, $result['status']);
+    }
+
+    public function redirectUrl($code) {
+        $result = ['status' => 200];
+
+        try {
+            $url = $this->urlService->getUrlByCode($code);
+            $result['data'] = $url;
+
+        } catch (\Exception $e) {
+            $result = [
+                'status' => 500,
+                'error' => $e->getMessage()
+            ];
+        }
+        return \Redirect::to($url);
     }
 }

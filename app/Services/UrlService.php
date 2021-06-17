@@ -12,23 +12,25 @@ use Illuminate\Support\Facades\Validator;
 class UrlService {
 
     protected $urlRepository;
+    protected $hostUrl = 'http://127.0.0.1:8000/';
+    protected $apiPath = 'api/';
 
     public function __construct(UrlRepository $urlRepository) {
         $this->urlRepository = $urlRepository;
     }
 
-    public function saveUrlData($data) {
+    public function buildUrl($data) {
         $validator = Validator::make($data, [
             'original_url' => 'required:url',
             'desirable_url' => 'url',
             'expiration_date' => 'date|after_or_equal:' . date('d-m-Y'),
         ]);
 
-        $data['shortener_url'] = 'http://m2b.io/' . $this->generateRandomString();
+        $data['shortener_url'] = $this->hostUrl . $this->apiPath . $this->generateRandomString();
 
         if(array_key_exists('desirable_url', $data)) {
             $findDesirableUrl = $data['desirable_url'];
-            $resultUrl = $this->getByDesirableUrl($findDesirableUrl);
+            $resultUrl = $this->loadUrl($findDesirableUrl);
             if(count($resultUrl) > 0) {
                 throw new \InvalidArgumentException("Url already exists.");
             }else {
@@ -55,8 +57,8 @@ class UrlService {
         return $this->urlRepository->getAllUrls();
     }
 
-    public function getByDesirableUrl($desirableUrl) {
-        return $this->urlRepository->getByDesirableUrl($desirableUrl);
+    public function loadUrl($searchedUrl) {
+        return $this->urlRepository->loadUrl($searchedUrl);
     }
 
     public function deleteById($id) {
@@ -79,4 +81,20 @@ class UrlService {
         return $randomString;
     }
 
+    public function getUrlByCode($code) {
+        try {
+            $mountUrl = $this->hostUrl . $this->apiPath . $code;
+            $url = $this->urlRepository->loadUrl($mountUrl);
+            if(count($url) > 0) {
+                $result = $url[0]->original_url;
+                return $result;
+            }else {
+                throw new \InvalidArgumentException("Url not found");
+            }
+        } catch (\Exception $e) {
+            throw new \InvalidArgumentException($e->getMessage());
+        }
+
+        return $url;
+    }
 }

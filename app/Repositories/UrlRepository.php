@@ -28,7 +28,7 @@ class UrlRepository {
         return $this->url->get();
     }
 
-    public function getByDesirableUrl($desirableUrl) {
+    public function loadUrl($desirableUrl) {
         return $this->url
             ->where('shortener_url', $desirableUrl)
             ->get();

@@ -29,5 +29,7 @@ Route::group([
 });
 
 Route::get('urls', [UrlController::class, 'index']);
-Route::post('/urls', [UrlController::class, 'store']);
-Route::delete('/urls/{id}', [UrlController::class, 'destroy']);
+Route::post('urls', [UrlController::class, 'store']);
+//Route::delete('/urls/{id}', [UrlController::class, 'destroy']);
+
+Route::get('{code}', [UrlController::class, 'redirectUrl']);
