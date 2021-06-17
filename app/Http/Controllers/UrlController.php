@@ -102,13 +102,13 @@ class UrlController extends Controller {
         try {
             $url = $this->urlService->getUrlByCode($code);
             $result['data'] = $url;
-
+            return \Redirect::to($url);
         } catch (\Exception $e) {
             $result = [
                 'status' => 500,
                 'error' => $e->getMessage()
             ];
+            return response()->json($result, $result['status']);
         }
-        return \Redirect::to($url);
     }
 }

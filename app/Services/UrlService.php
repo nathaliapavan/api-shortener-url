@@ -86,8 +86,7 @@ class UrlService {
             $mountUrl = $this->hostUrl . $this->apiPath . $code;
             $url = $this->urlRepository->loadUrl($mountUrl);
             if(count($url) > 0) {
-                $result = $url[0]->original_url;
-                return $result;
+                return $url[0]->original_url;
             }else {
                 throw new \InvalidArgumentException("Url not found");
             }
